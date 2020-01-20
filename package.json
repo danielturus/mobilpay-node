@@ -7,7 +7,7 @@
     "build": "gulp dist-es5"
   },
   "repository": {
-    "url": "https://github.com/robi-richter/mobilpay-node",
+    "url": "https://github.com/danielturus/mobilpay-node",
     "type": "git"
   },
   "keywords": [
