@@ -12,6 +12,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var BaseRequest = require('./BaseRequest');
 var Invoice = require('./../Invoice');
+var CancelPayment = require('./../CancelPayment');
 var RequestError = require('../errors/RequestError');
 var constants = require('../constants');
 var _ = require('lodash');
@@ -33,9 +34,10 @@ var CardRequest = function (_BaseRequest) {
     if (params.orderId) {
       _this.orderId = params.orderId;
       _this.amount = params.amount;
+      new CancelPayment(_.pick(params, ['orderId', 'amount']));
+    } else {
+      _this.invoice = new Invoice(_.pick(params, ['amount', 'currency', 'customerId', 'tokenId', 'panMasked', 'details', 'billingAddress', 'shippingAddress']));
     }
-
-    _this.invoice = new Invoice(_.pick(params, ['amount', 'currency', 'customerId', 'tokenId', 'panMasked', 'details', 'billingAddress', 'shippingAddress']));
     return _this;
   }
 
