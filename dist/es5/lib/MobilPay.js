@@ -116,12 +116,14 @@ var MobilPay = function () {
           privateKeyFile: _this2.config.privateKeyFile,
           key: envKey
         }).then(function (data) {
+          console.log('response data from MobilPay', data);
           var parser = new xml2js.Parser({ explicitArray: false });
 
           parser.parseString(data, function (err, result) {
             if (err) {
               return reject(err);
             }
+            console.log('result  decrypted data from MobilPay', result);
 
             if (!result.order) {
               return reject(new Error('Invalid XML data'));
