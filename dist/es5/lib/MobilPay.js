@@ -137,7 +137,6 @@ var MobilPay = function () {
     key: 'creditInvoice',
     value: function creditInvoice(_ref2) {
       var sessionId = _ref2.sessionId,
-          signature = _ref2.signature,
           orderId = _ref2.orderId,
           amount = _ref2.amount;
 
