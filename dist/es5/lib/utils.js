@@ -7,8 +7,6 @@ var _ = require('lodash');
 var Promise = require('es6-promise').Promise;
 var crypto = require('crypto');
 var NodeRSA = require('node-rsa');
-var constants = require('./constants');
-var CardRequest = require('./request/CardRequest');
 
 module.exports.getUniqueId = getUniqueId;
 module.exports.encrypt = encrypt;

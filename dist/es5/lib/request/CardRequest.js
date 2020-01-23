@@ -31,11 +31,7 @@ var CardRequest = function (_BaseRequest) {
 
     var _this = _possibleConstructorReturn(this, (CardRequest.__proto__ || Object.getPrototypeOf(CardRequest)).call(this, params));
 
-    if (params.orderId) {
-      Object.assign(_this, new CancelPayment(_.pick(params, ['orderId', 'amount'])));
-    } else {
-      _this.invoice = new Invoice(_.pick(params, ['amount', 'currency', 'customerId', 'tokenId', 'panMasked', 'details', 'billingAddress', 'shippingAddress']));
-    }
+    _this.invoice = new Invoice(_.pick(params, ['amount', 'currency', 'customerId', 'tokenId', 'panMasked', 'details', 'billingAddress', 'shippingAddress']));
     return _this;
   }
 

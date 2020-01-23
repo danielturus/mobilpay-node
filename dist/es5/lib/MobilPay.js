@@ -29,6 +29,7 @@ var Promise = require('es6-promise').Promise;
 var xml2js = require('xml2js');
 var _ = require('lodash');
 var Notify = require('./Notify');
+var request = require('request');
 
 var MobilPay = function () {
 
@@ -74,10 +75,7 @@ var MobilPay = function () {
       params.returnUrl = this.config.returnUrl;
       params.currency = this.config.currency;
 
-      if (params.orderId && params.amount) {
-        console.log(' if (params.orderId && params.amount) { a intrat ______');
-        return new CardRequest(params);
-      } else if (params.paymentType === constants.PAYMENT_TYPE_CARD) {
+      if (params.paymentType === constants.PAYMENT_TYPE_CARD) {
         return new CardRequest(params);
       }
 
@@ -103,13 +101,93 @@ var MobilPay = function () {
       });
     }
   }, {
+    key: 'getSessionId',
+    value: function getSessionId(_ref) {
+      var username = _ref.username,
+          password = _ref.password;
+
+      if (!username) {
+        throw new Error('username is required');
+      }
+
+      if (!password) {
+        throw new Error('password is required');
+      }
+
+      return new Promise(function (resolve, reject) {
+        var xml = '\n        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:pay="' + constants.REQUEST_ENDPOINTS.login + '">\n          <soapenv:Header/>\n          <soapenv:Body>\n              <pay:logIn>\n                <request>\n                    <username>' + username + '</username>\n                    <password>' + password + '</password>\n                </request>\n              </pay:logIn>\n          </soapenv:Body>\n        </soapenv:Envelope>';
+
+        var options = {
+          url: constants.REQUEST_ENDPOINTS.login,
+          body: xml,
+          headers: { 'Content-Type': 'text/xml' }
+        };
+
+        request.post(options, function (err, response, body) {
+          if (err) {
+            reject(err);
+          }
+
+          console.log('body test', body);
+          return resolve(body);
+        });
+      });
+    }
+  }, {
+    key: 'creditInvoice',
+    value: function creditInvoice(_ref2) {
+      var sessionId = _ref2.sessionId,
+          signature = _ref2.signature,
+          orderId = _ref2.orderId,
+          amount = _ref2.amount;
+
+      if (!sessionId) {
+        throw new Error('sessionId is required');
+      }
+
+      if (!signature) {
+        throw new Error('signature is required');
+      }
+
+      if (!orderId) {
+        throw new Error('orderId is required');
+      }
+
+      if (!amount) {
+        throw new Error('amount is required');
+      }
+
+      if (amount < 0.1 || amount > 99999) {
+        throw new Error('Invalid amount value. A minimum of ' + '0.10 and a maximum of 99999 units are permitted ');
+      }
+
+      return new Promise(function (resolve, reject) {
+        var xml = '\n      <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:pay="http://sandboxsecure.mobilpay.ro/api/payment2/">\n        <soapenv:Header/>\n        <soapenv:Body>\n            <pay:credit>\n              <request>\n                  <sessionId>' + sessionId + '</sessionId>\n                  <sacId>' + signature + '</sacId>\n                  <orderId>' + orderId + '</orderId>\n                  <amount>' + amount + '</amount>\n              </request>\n            </pay:credit>\n        </soapenv:Body>\n      </soapenv:Envelope>';
+
+        var options = {
+          url: constants.REQUEST_ENDPOINTS.login,
+          body: xml,
+          headers: { 'Content-Type': 'text/xml' }
+        };
+
+        request.post(options, function (err, response, body) {
+          if (err) {
+            reject(err);
+          }
+
+          console.log('body test', body);
+          resolve(body);
+        });
+      });
+    }
+  }, {
     key: 'handleGatewayResponse',
     value: function handleGatewayResponse() {
       var _this2 = this;
 
-      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          envKey = _ref.envKey,
-          data = _ref.data;
+      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          envKey = _ref3.envKey,
+          data = _ref3.data;
 
       return new Promise(function (resolve, reject) {
         decrypt(data, {
