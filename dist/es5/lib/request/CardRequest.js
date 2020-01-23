@@ -12,7 +12,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var BaseRequest = require('./BaseRequest');
 var Invoice = require('./../Invoice');
-var CancelPayment = require('./../CancelPayment');
 var RequestError = require('../errors/RequestError');
 var constants = require('../constants');
 var _ = require('lodash');
