@@ -196,8 +196,16 @@ var MobilPay = function () {
             reject(err);
           }
 
-          console.log('body test', body);
-          resolve(body);
+          var parser = new xml2js.Parser({ explicitArray: false });
+          parser.parseString(body, function (err, result) {
+            if (err) {
+              return reject(err);
+            }
+
+            console.log(result);
+            var sessionId = result['SOAP-ENV:Envelope']['SOAP-ENV:Body'];
+            resolve({ sessionId: sessionId });
+          });
         });
       });
     }
