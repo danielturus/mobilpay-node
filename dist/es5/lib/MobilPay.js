@@ -148,10 +148,20 @@ var MobilPay = function () {
             reject(err);
           }
 
-          var parser = new xml2js.Parser();
-          var parsedBody = parser.parseString(body);
-          console.log('body parsedBody', parsedBody);
-          return resolve(body);
+          // SOAP should response with statuses 2xx or 500 - https://www.w3.org/TR/2000/NOTE-SOAP-20000508/
+          if (response.statusCode === 500) {
+            reject({ error: true, message: "Something went wrong" });
+          }
+
+          var parser = new xml2js.Parser({ explicitArray: false });
+          parser.parseString(body, function (err, result) {
+            if (err) {
+              reject(err);
+            }
+
+            var sessionId = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:logInResponse']['logInResult'].id;
+            resolve({ sessionId: sessionId });
+          });
         });
       });
     }
