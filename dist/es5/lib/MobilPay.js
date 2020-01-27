@@ -103,6 +103,8 @@ var MobilPay = function () {
   }, {
     key: 'getSessionId',
     value: function getSessionId(_ref) {
+      var _this2 = this;
+
       var username = _ref.username,
           password = _ref.password;
 
@@ -115,10 +117,28 @@ var MobilPay = function () {
       }
 
       return new Promise(function (resolve, reject) {
-        var xml = '\n        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:pay="' + constants.REQUEST_ENDPOINTS.login + '">\n          <soapenv:Header/>\n          <soapenv:Body>\n              <pay:logIn>\n                <request>\n                    <username>' + username + '</username>\n                    <password>' + password + '</password>\n                </request>\n              </pay:logIn>\n          </soapenv:Body>\n        </soapenv:Envelope>';
+        var url = constants.REQUEST_ENDPOINTS.login[_this2.config.sandbox ? constants.SANDBOX_MODE : constants.LIVE_MODE];
+        var builder = new xml2js.Builder();
+        var xml = builder.buildObject({
+          "soapenv:Envelope": {
+            "$": {
+              "xmlns:soapenv": "http://schemas.xmlsoap.org/soap/envelope/",
+              "xmlns:pay": url
+            },
+            "soapenv:Header": [],
+            "soapenv:Body": [{
+              "pay:logIn": [{
+                "request": [{
+                  "username": [username],
+                  "password": [password]
+                }]
+              }]
+            }]
+          }
+        });
 
         var options = {
-          url: constants.REQUEST_ENDPOINTS.login,
+          url: url,
           body: xml,
           headers: { 'Content-Type': 'text/xml' }
         };
@@ -128,7 +148,9 @@ var MobilPay = function () {
             reject(err);
           }
 
-          console.log('body test', body);
+          var parser = new xml2js.Parser();
+          var parsedBody = parser.parseString(body);
+          console.log('body parsedBody', parsedBody);
           return resolve(body);
         });
       });
@@ -182,7 +204,7 @@ var MobilPay = function () {
   }, {
     key: 'handleGatewayResponse',
     value: function handleGatewayResponse() {
-      var _this2 = this;
+      var _this3 = this;
 
       var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
           envKey = _ref3.envKey,
@@ -190,7 +212,7 @@ var MobilPay = function () {
 
       return new Promise(function (resolve, reject) {
         decrypt(data, {
-          privateKeyFile: _this2.config.privateKeyFile,
+          privateKeyFile: _this3.config.privateKeyFile,
           key: envKey
         }).then(function (data) {
           console.log('response data from MobilPay', data);

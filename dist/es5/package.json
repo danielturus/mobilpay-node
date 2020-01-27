@@ -2,7 +2,7 @@
   "name": "mobilpay-node",
   "version": "0.1.0",
   "description": "MobilPay Gateway library",
-  "main": "./dist/es5/index.js",
+  "main": "./index.js",
   "scripts": {
     "build": "gulp dist-es5"
   },
