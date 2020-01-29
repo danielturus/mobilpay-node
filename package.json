@@ -2,12 +2,12 @@
   "name": "mobilpay-node",
   "version": "0.1.0",
   "description": "MobilPay Gateway library",
-  "main": "./index.js",
+  "main": "index.js",
   "scripts": {
     "build": "gulp dist-es5"
   },
   "repository": {
-    "url": "https://github.com/danielturus/mobilpay-node",
+    "url": "https://github.com/robi-richter/mobilpay-node",
     "type": "git"
   },
   "keywords": [
